@@ -1,6 +1,6 @@
 mod types;
 pub use types::*;
-use shared_lib::request::{WsErrorResponse, WsOkResponse, WsRequest, WsResponse};
+use nultr_shared_lib::request::{WsErrorResponse, WsOkResponse, WsRequest, WsResponse};
 
 use futures::{SinkExt, Stream, StreamExt as FuturesStreamExt, stream};
 use tokio_tungstenite::tungstenite::{self, handshake::client::generate_key};

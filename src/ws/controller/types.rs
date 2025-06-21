@@ -1,4 +1,4 @@
-use shared_lib::request::{AuthToken, WsErrorResponse, WsMessageRequest, WsMessageResponse, WsOkResponse};
+use nultr_shared_lib::request::{AuthToken, WsErrorResponse, WsMessageRequest, WsMessageResponse, WsOkResponse};
 use tokio::sync::mpsc;
 use url::Url;
 

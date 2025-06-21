@@ -3,7 +3,7 @@ pub use types::*;
 
 use async_stream::stream;
 use futures::{SinkExt, Stream, StreamExt as FuturesStreamExt, stream};
-use shared_lib::request::{
+use nultr_shared_lib::request::{
     AuthToken, WsErrorResponse, WsMessageRequest, WsMessageResponse, WsOkResponse, WsRequest,
 };
 use tokio::{
