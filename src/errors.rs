@@ -1,5 +1,5 @@
 use nultr_shared_lib::request::{AuthenticatedUnexpectedErrorResponse, GetMessagesErrorResponse, GetUsersResponse, LoginErrorResponse, UnexpectedErrorResponse};
-use rust_api_integrator::http::client::RequestError;
+use rust_api_kit::http::client::RequestError;
 
 use crate::ws;
 
