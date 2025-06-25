@@ -1,5 +1,4 @@
 use nultr_shared_lib::request::{AuthToken, WsErrorResponse, WsMessageRequest, WsMessageResponse, WsOkResponse};
-use tokio::sync::mpsc;
 use url::Url;
 
 use crate::ws::client;
@@ -7,15 +6,6 @@ use crate::ws::client;
 pub enum ReceivedEventVariant {
     Send(SendEvent),
     Receive(Result<Result<WsOkResponse, WsErrorResponse>, client::ResponseReceiveError>),
-}
-
-#[derive(Debug, Clone)]
-pub enum Event {
-    Ready(mpsc::UnboundedSender<SendEvent>),
-    Connected,
-    Message(WsMessageResponse),
-    MessageSent,
-    Disconnected,
 }
 
 #[derive(Debug, Clone)]

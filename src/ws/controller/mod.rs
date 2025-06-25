@@ -1,8 +1,21 @@
 mod types;
+
+
+#[cfg(all(feature = "dioxus-integration", feature = "iced-integration"))]
+compile_error!("Features `dioxus_integration` and `iced_integration` cannot be enabled at the same time.");
+
+#[cfg(feature = "dioxus-integration")]
+pub mod dioxus_integration;
+#[cfg(feature = "dioxus-integration")]
+pub use dioxus_integration::Event;
+
+#[cfg(feature = "iced-integration")]
+pub mod iced_integration;
+#[cfg(feature = "iced-integration")]
+pub use iced_integration::Event;
+
 pub use types::*;
 
-use async_stream::stream;
-use futures::{SinkExt, Stream, StreamExt as FuturesStreamExt, stream};
 use nultr_shared_lib::request::{
     AuthToken, WsErrorResponse, WsMessageRequest, WsMessageResponse, WsOkResponse, WsRequest,
 };
@@ -12,31 +25,6 @@ use tokio::{
 };
 
 use super::client::{self, ResponseReceiveError};
-
-pub fn iced_subscription() -> impl Stream<Item = Result<Event, Error>> {
-    stream! {
-        let (send_tx, send_rx) = mpsc::unbounded_channel::<SendEvent>();
-
-        let mut handler = EventHandler::new(send_rx);
-
-        yield Ok(Event::Ready(send_tx));
-
-        loop {
-            let event = handler.next().await;
-
-            let event_result = match event {
-                ReceivedEventVariant::Send(result) => {
-                    handler.handle_send(result).await
-                },
-                ReceivedEventVariant::Receive(result) => {
-                    handler.handle_receive(result).await
-                }
-            };
-
-            yield event_result;
-        }
-    }
-}
 
 struct EventHandler {
     ws_client: client::Instance,
