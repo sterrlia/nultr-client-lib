@@ -20,6 +20,7 @@ reqwest = { version = "0.12.20", features = ["json"] }
 nultr-shared-lib = { path = "../shared-lib" }
 rust-api-kit = { path = "../rust-api-kit", features = [] }
 async-stream = "0.3.6"
+uuid = { version = "1.17.0", features = ["v4", "serde"] }
 
 [features]
 default = []

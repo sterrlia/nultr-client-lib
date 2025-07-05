@@ -1,8 +1,9 @@
 mod types;
 
-
 #[cfg(all(feature = "dioxus-integration", feature = "iced-integration"))]
-compile_error!("Features `dioxus_integration` and `iced_integration` cannot be enabled at the same time.");
+compile_error!(
+    "Features `dioxus_integration` and `iced_integration` cannot be enabled at the same time."
+);
 
 #[cfg(feature = "dioxus-integration")]
 pub mod dioxus_integration;
@@ -56,28 +57,38 @@ impl EventHandler {
         }
     }
 
-    pub async fn handle_send(&mut self, event: SendEvent) -> Result<Event, Error> {
+    pub async fn handle_send(&mut self, event: SendEvent) -> Result<Option<Event>, Error> {
         match event {
             SendEvent::Connect { url, token } => {
                 let result = self.ws_client.connect(url, token).await;
 
                 match result {
                     Err(error) => Err(error.into()),
-                    Ok(_) => Ok(Event::Connected),
+                    Ok(_) => Ok(Some(Event::Connected)),
                 }
             }
             SendEvent::Disconnect => {
                 self.ws_client.disconnect().await;
 
-                Ok(Event::Disconnected)
+                Ok(Some(Event::Disconnected))
             }
             SendEvent::Message(request) => {
-                let request = WsRequest::Message(request);
-                let result = self.ws_client.send(request).await;
+                let message_uuid = request.uuid.clone();
+                let ws_request = WsRequest::Message(request);
+                let result = self.ws_client.send(ws_request).await;
 
                 match result {
                     Err(error) => Err(error.into()),
-                    Ok(_) => Ok(Event::MessageSent),
+                    Ok(_) => Ok(Some(Event::MessageSent(message_uuid))),
+                }
+            }
+            SendEvent::MessagesRead(request) => {
+                let ws_request = WsRequest::MessagesRead(request);
+                let result = self.ws_client.send(ws_request).await;
+
+                match result {
+                    Err(error) => Err(error.into()),
+                    Ok(_) => Ok(None),
                 }
             }
         }
@@ -86,17 +97,24 @@ impl EventHandler {
     pub async fn handle_receive(
         &mut self,
         event_result: Result<Result<WsOkResponse, WsErrorResponse>, ResponseReceiveError>,
-    ) -> Result<Event, Error> {
-        event_result?
+    ) -> Result<Option<Event>, Error> {
+        let event = event_result?
             .map(|ok| match ok {
                 WsOkResponse::Message(ws_message_response) => Event::Message(ws_message_response),
-                WsOkResponse::MessageSent => Event::MessageSent,
+                WsOkResponse::MessagesRead(response) => Event::MessagesRead(response),
+                WsOkResponse::MessageReceived(message_uuid) => Event::MessageReceived(message_uuid),
             })
             .map_err(|err| match err {
                 WsErrorResponse::WrongFormat => Error::WrongRequestFormat,
                 WsErrorResponse::WrongJsonFormat => Error::WrongRequestFormat,
+                WsErrorResponse::MessageNotFound(message_uuid) => {
+                    Error::MessageNotFound(message_uuid)
+                }
                 WsErrorResponse::UserNotFound => Error::UserNotFound,
                 WsErrorResponse::Fatal => Error::Unknown,
-            })
+                WsErrorResponse::NotMemberOfRoom => Error::NotMemberOfRoom,
+            });
+
+        event.map(|event| Some(event))
     }
 }

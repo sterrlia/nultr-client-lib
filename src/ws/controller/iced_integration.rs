@@ -1,8 +1,8 @@
-use async_stream::stream;
-use nultr_shared_lib::request::WsMessageResponse;
-use tokio::sync::mpsc;
-use futures::{SinkExt, Stream, StreamExt as FuturesStreamExt};
 use crate::ws::controller::{EventHandler, ReceivedEventVariant};
+use async_stream::stream;
+use futures::{SinkExt, Stream, StreamExt as FuturesStreamExt};
+use nultr_shared_lib::request::{UuidIdentifier, WsMessageResponse, WsMessagesReadResponse};
+use tokio::sync::mpsc;
 
 use super::{Error, SendEvent};
 
@@ -11,11 +11,13 @@ pub enum Event {
     Ready(mpsc::UnboundedSender<SendEvent>),
     Connected,
     Message(WsMessageResponse),
-    MessageSent,
+    MessageSent(UuidIdentifier),
+    MessagesRead(WsMessagesReadResponse),
+    MessageReceived(UuidIdentifier),
     Disconnected,
 }
 
-pub fn iced_subscription() -> impl Stream<Item = Result<Event, Error>> {
+pub fn subscription() -> impl Stream<Item = Result<Event, Error>> {
     stream! {
         let (send_tx, send_rx) = mpsc::unbounded_channel::<SendEvent>();
 
@@ -35,8 +37,16 @@ pub fn iced_subscription() -> impl Stream<Item = Result<Event, Error>> {
                 }
             };
 
-            yield event_result;
+            match event_result {
+                Ok(event_option) => {
+                    if let Some(event) = event_option {
+                        yield Ok(event);
+                    }
+                }
+                Err(error) => {
+                    yield Err(error);
+                }
+            };
         }
     }
 }
-

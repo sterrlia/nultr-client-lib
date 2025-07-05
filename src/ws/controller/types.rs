@@ -1,5 +1,8 @@
-use nultr_shared_lib::request::{AuthToken, WsErrorResponse, WsMessageRequest, WsMessageResponse, WsOkResponse};
+use nultr_shared_lib::request::{
+    AuthToken, WsErrorResponse, WsMarkMessagesReadRequest, WsMessageRequest, WsMessageResponse, WsOkResponse
+};
 use url::Url;
+use uuid::Uuid;
 
 use crate::ws::client;
 
@@ -17,6 +20,8 @@ pub enum Error {
     Serialization,
     WrongRequestFormat,
     UserNotFound,
+    NotMemberOfRoom,
+    MessageNotFound(Uuid),
     Unknown,
 }
 
@@ -25,6 +30,7 @@ pub enum SendEvent {
     Connect { url: Url, token: AuthToken },
     Disconnect,
     Message(WsMessageRequest),
+    MessagesRead(WsMarkMessagesReadRequest)
 }
 
 impl From<client::ResponseReceiveError> for Error {
@@ -32,10 +38,7 @@ impl From<client::ResponseReceiveError> for Error {
         match value {
             client::ResponseReceiveError::Error => Error::Unknown,
             client::ResponseReceiveError::Deserialization => Error::Deserialization,
-            client::ResponseReceiveError::Disconnected => Error::Disconnected,
-            client::ResponseReceiveError::Error => Error::Unknown,
-            client::ResponseReceiveError::Deserialization => Error::Deserialization,
-            client::ResponseReceiveError::Disconnected => Error::Disconnected,
+            client::ResponseReceiveError::Disconnected => Error::Disconnected
         }
     }
 }

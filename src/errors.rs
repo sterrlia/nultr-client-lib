@@ -1,4 +1,4 @@
-use nultr_shared_lib::request::{AuthenticatedUnexpectedErrorResponse, GetMessagesErrorResponse, GetUsersResponse, LoginErrorResponse, UnexpectedErrorResponse};
+use nultr_shared_lib::request::{AuthenticatedUnexpectedErrorResponse, GetMessagesErrorResponse, GetRoomsErrorResponse, GetUsersResponse, LoginErrorResponse, UnexpectedErrorResponse};
 use rust_api_kit::http::client::RequestError;
 
 use crate::ws;
@@ -46,6 +46,8 @@ define_error_messages! {
         ws::controller::Error::Unknown => "Unknown error",
         ws::controller::Error::WrongRequestFormat => "Wrong request format",
         ws::controller::Error::UserNotFound => "User not found",
+        ws::controller::Error::MessageNotFound(_) => "Message not found",
+        ws::controller::Error::NotMemberOfRoom => "User is a member of this chat",
     },
     AuthenticatedUnexpectedErrorResponse => {
         AuthenticatedUnexpectedErrorResponse::InternalServerError => "Server error",
@@ -61,8 +63,12 @@ define_error_messages! {
         _ => "Unknown error"
     },
     GetMessagesErrorResponse => {
-        GetMessagesErrorResponse::UserNotFound => "User not found",
-        GetMessagesErrorResponse::AccessDenied => "Access denied"
+        GetMessagesErrorResponse::RoomNotFound => "User not found",
+        GetMessagesErrorResponse::AccessDenied => "Access denied",
+        GetMessagesErrorResponse::NotMemberOfRoom => "User is not member of chat"
+    },
+    GetRoomsErrorResponse => {
+        GetRoomsErrorResponse::UserNotFound => "User not found"
     }
 }
 

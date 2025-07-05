@@ -12,7 +12,7 @@ pub struct Variables {
 pub type ParseError = String;
 
 pub static VARIABLES: Lazy<Variables> = Lazy::new(|| {
-    let config_str = fs::read_to_string("config.toml").unwrap();
+    let config_str = fs::read_to_string("client-config.toml").unwrap();
 
     let variables: Variables = toml::from_str(&config_str).unwrap();
 
