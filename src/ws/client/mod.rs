@@ -1,8 +1,8 @@
 mod types;
-pub use types::*;
 use nultr_shared_lib::request::{WsErrorResponse, WsOkResponse, WsRequest, WsResponse};
+pub use types::*;
 
-use futures::{SinkExt, StreamExt as FuturesStreamExt};
+use futures::{SinkExt, StreamExt};
 use tokio_tungstenite::tungstenite::{self, handshake::client::generate_key};
 use url::Url;
 
@@ -17,7 +17,7 @@ impl Channel {
 
         let tungstenine_message = tungstenite::Message::Text(serialized_message.into());
 
-        &mut self.write_stream.send(tungstenine_message).await?;
+        self.write_stream.send(tungstenine_message).await?;
 
         Ok(())
     }
@@ -26,8 +26,7 @@ impl Channel {
         &mut self,
     ) -> Result<Result<WsOkResponse, WsErrorResponse>, ResponseReceiveError> {
         let ws_stream_value = &mut self.read_stream.next().await;
-        let ws_event_result = match_ws_event(ws_stream_value);
-        ws_event_result
+        match_ws_event(ws_stream_value)
     }
 }
 
@@ -115,11 +114,11 @@ impl Instance {
         self.state = State::Disconnected;
 
         if let Some(channel) = &mut self.channel {
-            channel
-                .write_stream
-                .close()
-                .await
-                .inspect_err(|err| tracing::warn!("Disconnect error {}", err.to_string()));
+            let close_result = channel.write_stream.close().await;
+
+            if let Err(error) = close_result {
+                tracing::warn!("Disconnect error {:?}", error)
+            }
 
             self.channel = None;
         }

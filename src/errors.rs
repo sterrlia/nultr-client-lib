@@ -4,7 +4,7 @@ use rust_api_kit::http::client::RequestError;
 use crate::ws;
 
 pub trait IntoErrorMessage {
-    fn into_error_message(&self) -> String;
+    fn into_error_message(self) -> String;
 }
 
 macro_rules! define_error_messages {
@@ -15,7 +15,7 @@ macro_rules! define_error_messages {
     ) => {
         $(
             impl IntoErrorMessage for $type {
-                fn into_error_message(&self) -> String {
+                fn into_error_message(self) -> String {
                     let message = match self {
                         $( $variant => $msg, )*
                     };
