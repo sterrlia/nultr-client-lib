@@ -18,7 +18,7 @@ pub use iced_integration::Event;
 pub use types::*;
 
 use nultr_shared_lib::request::{
-    AuthToken, WsErrorResponse, WsMessageRequest, WsMessageResponse, WsOkResponse, WsRequest,
+    WsErrorResponse, WsOkResponse, WsRequest,
 };
 use tokio::{
     select,

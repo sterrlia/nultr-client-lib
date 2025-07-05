@@ -1,5 +1,5 @@
 use nultr_shared_lib::request::{
-    AuthToken, WsErrorResponse, WsMarkMessagesReadRequest, WsMessageRequest, WsMessageResponse, WsOkResponse
+    AuthToken, WsErrorResponse, WsMarkMessagesReadRequest, WsMessageRequest, WsOkResponse
 };
 use url::Url;
 use uuid::Uuid;

@@ -2,7 +2,7 @@ mod types;
 pub use types::*;
 use nultr_shared_lib::request::{WsErrorResponse, WsOkResponse, WsRequest, WsResponse};
 
-use futures::{SinkExt, Stream, StreamExt as FuturesStreamExt, stream};
+use futures::{SinkExt, StreamExt as FuturesStreamExt};
 use tokio_tungstenite::tungstenite::{self, handshake::client::generate_key};
 use url::Url;
 
