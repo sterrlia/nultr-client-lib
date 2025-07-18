@@ -22,7 +22,7 @@ async-stream = "0.3.6"
 uuid = { version = "1.17.0", features = ["v4", "serde"] }
 
 [features]
-default = []
+default = ["iced-integration"]
 dioxus-integration = []
 iced-integration = []
 
