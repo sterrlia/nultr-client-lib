@@ -1,25 +1,23 @@
 mod types;
 
-#[cfg(all(feature = "dioxus-integration", feature = "iced-integration"))]
+#[cfg(all(feature = "dioxus", feature = "iced"))]
 compile_error!(
     "Features `dioxus_integration` and `iced_integration` cannot be enabled at the same time."
 );
 
-#[cfg(feature = "dioxus-integration")]
+#[cfg(feature = "dioxus")]
 pub mod dioxus_integration;
-#[cfg(feature = "dioxus-integration")]
+#[cfg(feature = "dioxus")]
 pub use dioxus_integration::Event;
 
-#[cfg(feature = "iced-integration")]
+#[cfg(feature = "iced")]
 pub mod iced_integration;
-#[cfg(feature = "iced-integration")]
+#[cfg(feature = "iced")]
 pub use iced_integration::Event;
 
 pub use types::*;
 
-use nultr_shared_lib::request::{
-    WsErrorResponse, WsOkResponse, WsRequest,
-};
+use nultr_shared_lib::request::{WsErrorResponse, WsOkResponse, WsRequest};
 use tokio::{
     select,
     sync::mpsc::{self},

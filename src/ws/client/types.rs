@@ -53,4 +53,3 @@ impl From<tungstenite::Error> for RequestSendError {
         RequestSendError::Send
     }
 }
-

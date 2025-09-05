@@ -61,5 +61,3 @@ macro_rules! define_event_channels {
         )*
     };
 }
-
-

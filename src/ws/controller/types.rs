@@ -1,5 +1,5 @@
 use nultr_shared_lib::request::{
-    AuthToken, WsErrorResponse, WsMarkMessagesReadRequest, WsMessageRequest, WsOkResponse
+    AuthToken, WsErrorResponse, WsMarkMessagesReadRequest, WsMessageRequest, WsOkResponse,
 };
 use url::Url;
 use uuid::Uuid;
@@ -30,7 +30,7 @@ pub enum SendEvent {
     Connect { url: Url, token: AuthToken },
     Disconnect,
     Message(WsMessageRequest),
-    MessagesRead(WsMarkMessagesReadRequest)
+    MessagesRead(WsMarkMessagesReadRequest),
 }
 
 impl From<client::ResponseReceiveError> for Error {
@@ -38,7 +38,7 @@ impl From<client::ResponseReceiveError> for Error {
         match value {
             client::ResponseReceiveError::Error => Error::Unknown,
             client::ResponseReceiveError::Deserialization => Error::Deserialization,
-            client::ResponseReceiveError::Disconnected => Error::Disconnected
+            client::ResponseReceiveError::Disconnected => Error::Disconnected,
         }
     }
 }
