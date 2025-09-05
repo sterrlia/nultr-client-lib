@@ -71,7 +71,7 @@ impl EventHandler {
                 Ok(Some(Event::Disconnected))
             }
             SendEvent::Message(request) => {
-                let message_uuid = request.uuid.clone();
+                let message_uuid = request.uuid;
                 let ws_request = WsRequest::Message(request);
                 let result = self.ws_client.send(ws_request).await;
 
@@ -113,6 +113,6 @@ impl EventHandler {
                 WsErrorResponse::NotMemberOfRoom => Error::NotMemberOfRoom,
             });
 
-        event.map(|event| Some(event))
+        event.map(Some)
     }
 }
