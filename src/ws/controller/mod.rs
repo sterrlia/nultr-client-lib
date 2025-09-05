@@ -2,7 +2,7 @@ mod types;
 
 #[cfg(all(feature = "dioxus", feature = "iced"))]
 compile_error!(
-    "Features `dioxus_integration` and `iced_integration` cannot be enabled at the same time."
+    "Features `dioxus` and `iced` cannot be enabled at the same time."
 );
 
 #[cfg(feature = "dioxus")]
